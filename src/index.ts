@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, Response } from 'express'
+import express from 'express'
 import router from './routers/router'
 import session from 'express-session'
 import cookieParser from 'cookie-parser'
@@ -6,14 +6,6 @@ import cookieParser from 'cookie-parser'
 const app = express()
 
 app.use(cookieParser())
-
-// Use custom cookie to avoid client setting connect.sid implicitly and override our session
-app.use((req: Request, res: Response, next: NextFunction) => {
-  if (req.cookies && req.cookies['connect.sid'] && req.cookies['myapp.sid']) {
-    delete req.cookies['connect.sid']
-  }
-  next()
-})
 
 // Config session middleware
 app.use(

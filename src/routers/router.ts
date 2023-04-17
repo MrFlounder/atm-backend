@@ -63,10 +63,19 @@ function validateSession(req: Request, res: Response, next: NextFunction) {
   next()
 }
 
+function sendCookieInBody(req: Request, res: Response, next: NextFunction) {
+  const cookieValue = req.header('Set-Cookie')
+  if (cookieValue) {
+    res.cookie('Cookie', cookieValue)
+  }
+  next()
+}
+
 // Endpoint for creating an account
 router.post(
   '/',
   validateAccountCreationRequest,
+  sendCookieInBody,
   async (req: Request, res: Response) => {
     const { email, password, firstName, lastName } = req.body
 
@@ -81,8 +90,7 @@ router.post(
       const newSession = req.session as ATMSession
       newSession.account = sanitizedAccountInfo
       return res.status(201).json({
-        accountInfo: sanitizeAccount(newAccount),
-        sessionId: req.sessionID
+        accountInfo: sanitizeAccount(newAccount)
       })
     } catch (error) {
       return res
